@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <title>Json Validator Demo</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h1>JSON VALIDATOR DEMO</h1>
+                    <p class="lead">https://github.com/gammasoft/json-validator</p>
+                    <hr />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 form-group">
+                    <textarea id="schema" class="form-control" rows="15" style="width: 100%;" placeholder="Schema"></textarea>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <textarea id="payload" class="form-control" rows="15" style="width: 100%;" placeholder="Payload"></textarea>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-sm-12">
+                    <button id="validate" class="btn btn-info btn-block">
+                        VALIDATE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="results" tabindex="-1" role="dialog" aria-labelledby="resultsLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                        </button>
+
+                        <h4 class="modal-title" id="resultsLabel">Results</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <p class="text-success"></p>
+                        <pre></pre>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script>
+        $(function () {
+            $('textarea').keydown(function(e) {
+                if(e.keyCode === 9) {
+                    var start = this.selectionStart;
+                    var end = this.selectionEnd;
+
+                    var $this = $(this);
+                    var value = $this.val();
+
+                    $this.val(value.substring(0, start) + "\t" + value.substring(end));
+                    this.selectionStart = this.selectionEnd = start + 1;
+
+                    e.preventDefault();
+                }
+            });
+
+            $('textarea').on('keyup', function (e) {
+                var $target = $(e.target),
+                    json = $target.val(),
+                    $formGroup = $target.closest('.form-group');
+
+                if(!json) {
+                    return $formGroup.removeClass('has-error').removeClass('has-success');
+                }
+
+                try {
+                    JSON.parse($target.val());
+                    $formGroup.addClass('has-success').removeClass('has-error');
+                } catch (err) {
+                    $formGroup.addClass('has-error').removeClass('has-success');
+                }
+            });
+
+            $('button#validate').on('click', function () {
+                var post = $.ajax({
+                    url: '/',
+                    type: 'post',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        schema: $('textarea#schema').val().trim(),
+                        payload: $('textarea#payload').val().trim()
+                    })
+                });
+
+                post.done(function (results) {
+                    var $modal = $('.modal');
+                    var $pre = $modal.find('pre');
+                    var $p = $modal.find('p');
+
+                    if(Object.keys(results).length) {
+                        $pre.show();
+                        $pre.html(JSON.stringify(results, null, 4));
+                        $p.removeClass('text-success').addClass('text-danger').text('INVALID');
+                    } else {
+                        $pre.hide();
+                        $p.removeClass('text-danger').addClass('text-success').text('VALID');
+                    }
+
+                    $modal.modal('show');
+                });
+
+                post.fail(function () {
+                    alert('Something went wrong!');
+                });
+            });
+        });
+        </script>
+    </body>
+</html>

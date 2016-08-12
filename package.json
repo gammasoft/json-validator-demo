@@ -1,0 +1,30 @@
+{
+  "name": "json-validator-demo",
+  "version": "1.0.0",
+  "description": "Demo website for https://github.com/gammasoft/json-validator",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "exit 0;"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://renatoargh@github.com/gammasoft/json-validator-demo.git"
+  },
+  "keywords": [
+    "json",
+    "validator",
+    "demo"
+  ],
+  "author": "Renato Gama <renato@gammasoft.com.br>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gammasoft/json-validator-demo/issues"
+  },
+  "homepage": "https://github.com/gammasoft/json-validator-demo",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "json-validator": "0.0.31"
+  }
+}
